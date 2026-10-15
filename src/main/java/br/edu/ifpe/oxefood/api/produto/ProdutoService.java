@@ -33,7 +33,7 @@ public class ProdutoService {
             produto = repository.findById(dto.getId()).get();
         }
 
-        //produto.setCategoria(categoriaProdutoRepository.findById(dto.getIdCategoria()).get());
+        produto.setCategoria(categoriaProdutoRepository.findById(dto.getIdCategoria()).get());
         produto.setCodigo(dto.getCodigo());
         produto.setTitulo(dto.getTitulo());
         produto.setDescricao(dto.getDescricao());
