@@ -9,13 +9,13 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ProdutoService {
- 
+
     private final ProdutoRepository repository;
 
     private final CategoriaProdutoRepository categoriaProdutoRepository;
 
     public ProdutoService(ProdutoRepository repository, CategoriaProdutoRepository categoriaProdutoRepository) {
-        
+
         this.repository = repository;
         this.categoriaProdutoRepository = categoriaProdutoRepository;
     }
@@ -24,11 +24,11 @@ public class ProdutoService {
 
         Produto produto = null;
 
-        if (dto.getId() == null) { //Montado para o cadastro
+        if (dto.getId() == null) { // Montado para o cadastro
 
             produto = new Produto();
 
-        } else { //Consultado para a alteração
+        } else { // Consultado para a alteração
 
             produto = repository.findById(dto.getId()).get();
         }
@@ -71,7 +71,7 @@ public class ProdutoService {
     public Produto atualizar(ProdutoDTO dto) {
 
         Produto produto = build(dto);
-	    return repository.save(produto);
+        return repository.save(produto);
     }
 
     @Transactional
@@ -82,4 +82,37 @@ public class ProdutoService {
 
         repository.save(produto);
     }
+
+    public List<Produto> filtrar(String codigo, String titulo, Long idCategoria) {
+
+        List<Produto> listaProdutos = repository.findAll();
+
+        if ((codigo != null && !"".equals(codigo)) &&
+                (titulo == null || "".equals(titulo)) &&
+                (idCategoria == null)) {
+
+            listaProdutos = repository.consultarPorCodigo(codigo);
+
+        } else if ((codigo == null || "".equals(codigo)) &&
+                (titulo != null && !"".equals(titulo)) &&
+                (idCategoria == null)) {
+
+            listaProdutos = repository.findByTituloContainingIgnoreCaseOrderByTituloAsc(titulo);
+
+        } else if ((codigo == null || "".equals(codigo)) &&
+                (titulo == null || "".equals(titulo)) &&
+                (idCategoria != null)) {
+
+            listaProdutos = repository.consultarPorCategoria(idCategoria);
+
+        } else if ((codigo == null || "".equals(codigo)) &&
+                (titulo != null && !"".equals(titulo)) &&
+                (idCategoria != null)) {
+                    
+            listaProdutos = repository.consultarPorTituloECategoria(titulo, idCategoria);
+        }
+
+        return listaProdutos;
+    }
+
 }
